@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2020",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": ["src/*"],
+      "@/auth/*": ["src/auth/*"],
+      "@/usuarios/*": ["src/usuarios/*"],
+      "@/productos/*": ["src/productos/*"],
+      "@/combos/*": ["src/combos/*"],
+      "@/promociones/*": ["src/promociones/*"],
+      "@/ventas/*": ["src/ventas/*"],
+      "@/clientes/*": ["src/clientes/*"],
+      "@/puntos/*": ["src/puntos/*"],
+      "@/delivery/*": ["src/delivery/*"],
+      "@/catalogo/*": ["src/catalogo/*"],
+      "@/notificaciones/*": ["src/notificaciones/*"],
+      "@/webhooks/*": ["src/webhooks/*"],
+      "@/configuraciones/*": ["src/configuraciones/*"],
+      "@/auditoria/*": ["src/auditoria/*"],
+      "@/cierres-caja/*": ["src/cierres-caja/*"],
+      "@/gastos/*": ["src/gastos/*"],
+      "@/common/*": ["src/common/*"],
+      "@/config/*": ["src/config/*"],
+      "@/database/*": ["src/database/*"]
+    }
+  }
+}
+
