@@ -12,6 +12,13 @@ import databaseConfig from './config/database.config';
 import { AuthModule } from './auth/auth.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { ProductosModule } from './productos/productos.module';
+import { PromocionesModule } from './promociones/promociones.module';
+import { PuntosModule } from './puntos/puntos.module';
+import { DeliveryModule } from './delivery/delivery.module';
+import { CierresCajaModule } from './cierres-caja/cierres-caja.module';
+import { GastosModule } from './gastos/gastos.module';
+import { CatalogoModule } from './catalogo/catalogo.module';
+import { NotificacionesModule } from './notificaciones/notificaciones.module';
 
 // Interceptors y Filters globales
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
@@ -37,18 +44,18 @@ import { AppService } from './app.service';
     AuthModule,
     UsuariosModule,
     ProductosModule,
+    PromocionesModule,
+    PuntosModule,
+    DeliveryModule,
+    CierresCajaModule,
+    GastosModule,
+    CatalogoModule,
+    NotificacionesModule,
     
-    // TODO: Agregar módulos restantes
+    // TODO: Agregar módulos restantes cuando estén listos
     // CombosModule,
-    // PromocionesModule,
     // VentasModule,
-    // CierresCajaModule,
-    // GastosModule,
     // ClientesModule,
-    // PuntosModule,
-    // DeliveryModule,
-    // CatalogoModule,
-    // NotificacionesModule,
     // WebhooksModule,
     // ConfiguracionesModule,
     // AuditoriaModule,
@@ -67,4 +74,3 @@ import { AppService } from './app.service';
   ],
 })
 export class AppModule {}
-
