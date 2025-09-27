@@ -18,6 +18,9 @@ export class Producto extends BaseEntity {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   precioCompra?: number;
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  precioOferta?: number;
+
   @Column({ type: 'int', default: 0 })
   stock: number;
 
@@ -149,4 +152,3 @@ export class Producto extends BaseEntity {
     return this.precio * (1 - porcentaje / 100);
   }
 }
-

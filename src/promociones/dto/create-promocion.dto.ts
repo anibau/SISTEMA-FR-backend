@@ -10,7 +10,7 @@ import {
   Min,
   Max,
   ValidateIf,
-  IsTimeString,
+  Matches,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -125,7 +125,7 @@ export class CreatePromocionDto {
     example: '09:00',
   })
   @IsOptional()
-  @IsTimeString({}, { message: 'La hora de inicio debe tener formato HH:mm' })
+  @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: 'La hora de inicio debe tener formato HH:mm' })
   horaInicio?: string;
 
   @ApiPropertyOptional({
@@ -133,7 +133,7 @@ export class CreatePromocionDto {
     example: '18:00',
   })
   @IsOptional()
-  @IsTimeString({}, { message: 'La hora de fin debe tener formato HH:mm' })
+  @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: 'La hora de fin debe tener formato HH:mm' })
   horaFin?: string;
 
   @ApiPropertyOptional({
@@ -258,4 +258,3 @@ export class CreatePromocionDto {
   @IsString({ message: 'Las observaciones deben ser una cadena de texto' })
   observaciones?: string;
 }
-

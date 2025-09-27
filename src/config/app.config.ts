@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 
-export const appConfig = registerAs('app', () => ({
+const appConfig = registerAs('app', () => ({
   // Configuración básica de la aplicación
   name: process.env.APP_NAME || 'Sistema Francachela Backend',
   version: process.env.APP_VERSION || '1.0.0',
@@ -78,3 +78,4 @@ export const appConfig = registerAs('app', () => ({
   },
 }));
 
+export default appConfig;

@@ -1,5 +1,6 @@
-import { Entity, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
+import { ComboDetalle } from './combo-detalle.entity';
 
 @Entity('combos')
 export class Combo extends BaseEntity {
@@ -16,10 +17,16 @@ export class Combo extends BaseEntity {
   precio: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
+  precioCombo: number; // Alias para precio
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   precioOriginal: number; // Suma de precios individuales
 
   @Column({ type: 'decimal', precision: 5, scale: 2 })
   descuentoPorcentaje: number; // Porcentaje de descuento
+
+  @Column({ type: 'decimal', precision: 5, scale: 2 })
+  descuento: number; // Alias para descuentoPorcentaje
 
   @Column({ nullable: true })
   imagen?: string;
@@ -45,6 +52,15 @@ export class Combo extends BaseEntity {
   // Relación con productos del combo
   @OneToMany(() => ComboDetalle, detalle => detalle.combo, { cascade: true })
   detalles: ComboDetalle[];
+
+  // Alias para compatibilidad con el servicio de catálogo
+  get productos(): ComboDetalle[] {
+    return this.detalles;
+  }
+
+  get estaDisponible(): boolean {
+    return this.disponible;
+  }
 
   // Métodos de utilidad
   get descuentoMonto(): number {
@@ -73,32 +89,3 @@ export class Combo extends BaseEntity {
     this.precio = this.precioOriginal * (1 - porcentaje / 100);
   }
 }
-
-@Entity('combo_detalles')
-export class ComboDetalle extends BaseEntity {
-  @Column()
-  comboId: string;
-
-  @Column()
-  productoId: string;
-
-  @Column({ type: 'int' })
-  cantidad: number;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  precioUnitario: number; // Precio del producto al momento de crear el combo
-
-  // Relaciones
-  @ManyToOne(() => Combo, combo => combo.detalles, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'comboId' })
-  combo: Combo;
-
-  // @ManyToOne(() => Producto, producto => producto.comboDetalles)
-  // @JoinColumn({ name: 'productoId' })
-  // producto: Producto;
-
-  get subtotal(): number {
-    return this.cantidad * this.precioUnitario;
-  }
-}
-

@@ -2,7 +2,7 @@ import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-export const databaseConfig = registerAs('database', (): TypeOrmModuleOptions => ({
+const databaseConfig = registerAs('database', (): TypeOrmModuleOptions => ({
   type: 'postgres',
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT, 10) || 5432,
@@ -39,3 +39,4 @@ const dataSourceOptions: DataSourceOptions = {
 
 export const AppDataSource = new DataSource(dataSourceOptions);
 
+export default databaseConfig;
