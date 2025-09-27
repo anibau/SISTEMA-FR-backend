@@ -1,37 +1,45 @@
 import {
   IsString,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
-  IsBoolean,
+  IsNumber,
   IsArray,
   ValidateNested,
-  IsPositive,
+  IsUUID,
+  IsBoolean,
+  IsDateString,
   Min,
   Max,
-  IsDateString,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
-export class ComboDetalleDto {
+export class CreateComboDetalleDto {
   @ApiProperty({
     description: 'ID del producto',
-    example: 'uuid-producto-1',
+    example: 'uuid-producto',
   })
-  @IsString({ message: 'El ID del producto debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'El ID del producto es requerido' })
+  @IsNotEmpty()
+  @IsUUID()
   productoId: string;
 
   @ApiProperty({
     description: 'Cantidad del producto en el combo',
     example: 2,
-    minimum: 1,
   })
-  @IsNumber({}, { message: 'La cantidad debe ser un número' })
-  @IsPositive({ message: 'La cantidad debe ser mayor a 0' })
-  @Type(() => Number)
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(1)
   cantidad: number;
+
+  @ApiProperty({
+    description: 'Precio unitario del producto al momento de crear el combo',
+    example: 25.50,
+  })
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  precioUnitario: number;
 }
 
 export class CreateComboDto {
@@ -39,36 +47,52 @@ export class CreateComboDto {
     description: 'Código único del combo',
     example: 'COMBO001',
   })
-  @IsString({ message: 'El código debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'El código es requerido' })
+  @IsNotEmpty()
+  @IsString()
   codigo: string;
 
   @ApiProperty({
     description: 'Nombre del combo',
-    example: 'Pack Vinos Premium',
+    example: 'Combo Cerveza + Piqueo',
   })
-  @IsString({ message: 'El nombre debe ser una cadena de texto' })
-  @IsNotEmpty({ message: 'El nombre es requerido' })
+  @IsNotEmpty()
+  @IsString()
   nombre: string;
 
   @ApiPropertyOptional({
     description: 'Descripción del combo',
-    example: 'Selección especial de vinos tintos y blancos',
+    example: '2 cervezas + 1 piqueo especial',
   })
   @IsOptional()
-  @IsString({ message: 'La descripción debe ser una cadena de texto' })
+  @IsString()
   descripcion?: string;
 
   @ApiProperty({
-    description: 'Porcentaje de descuento del combo',
-    example: 15,
-    minimum: 0,
-    maximum: 100,
+    description: 'Precio final del combo',
+    example: 45.00,
   })
-  @IsNumber({}, { message: 'El descuento debe ser un número' })
-  @Min(0, { message: 'El descuento no puede ser negativo' })
-  @Max(100, { message: 'El descuento no puede ser mayor a 100%' })
-  @Type(() => Number)
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  precio: number;
+
+  @ApiProperty({
+    description: 'Precio original (suma de productos individuales)',
+    example: 55.00,
+  })
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  precioOriginal: number;
+
+  @ApiProperty({
+    description: 'Porcentaje de descuento aplicado',
+    example: 18.18,
+  })
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
   descuentoPorcentaje: number;
 
   @ApiPropertyOptional({
@@ -76,52 +100,49 @@ export class CreateComboDto {
     example: 'https://example.com/combo.jpg',
   })
   @IsOptional()
-  @IsString({ message: 'La imagen debe ser una cadena de texto' })
+  @IsString()
   imagen?: string;
 
   @ApiPropertyOptional({
-    description: 'Indica si el combo es visible',
+    description: 'Si el combo es visible en el catálogo',
     example: true,
   })
   @IsOptional()
-  @IsBoolean({ message: 'esVisible debe ser un valor booleano' })
+  @IsBoolean()
   esVisible?: boolean;
 
   @ApiPropertyOptional({
-    description: 'Indica si el combo es destacado',
+    description: 'Si el combo es destacado',
     example: false,
   })
   @IsOptional()
-  @IsBoolean({ message: 'esDestacado debe ser un valor booleano' })
+  @IsBoolean()
   esDestacado?: boolean;
 
   @ApiPropertyOptional({
-    description: 'Fecha de inicio de vigencia del combo',
-    example: '2024-01-01T00:00:00.000Z',
+    description: 'Fecha de inicio de vigencia',
+    example: '2024-01-01T00:00:00Z',
   })
   @IsOptional()
-  @IsDateString({}, { message: 'La fecha de inicio debe ser una fecha válida' })
-  fechaInicio?: Date;
+  @IsDateString()
+  fechaInicio?: string;
 
   @ApiPropertyOptional({
-    description: 'Fecha de fin de vigencia del combo',
-    example: '2024-12-31T23:59:59.000Z',
+    description: 'Fecha de fin de vigencia',
+    example: '2024-12-31T23:59:59Z',
   })
   @IsOptional()
-  @IsDateString({}, { message: 'La fecha de fin debe ser una fecha válida' })
-  fechaFin?: Date;
+  @IsDateString()
+  fechaFin?: string;
 
   @ApiProperty({
-    description: 'Productos que componen el combo',
-    type: [ComboDetalleDto],
-    example: [
-      { productoId: 'uuid-producto-1', cantidad: 2 },
-      { productoId: 'uuid-producto-2', cantidad: 1 },
-    ],
+    description: 'Productos incluidos en el combo',
+    type: [CreateComboDetalleDto],
   })
-  @IsArray({ message: 'Los detalles deben ser un array' })
+  @IsNotEmpty()
+  @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ComboDetalleDto)
-  detalles: ComboDetalleDto[];
+  @Type(() => CreateComboDetalleDto)
+  detalles: CreateComboDetalleDto[];
 }
 

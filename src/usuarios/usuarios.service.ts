@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../auth/entities/user.entity';
-import { UsuarioProfile } from './entities/usuario.entity';
+// import { UsuarioProfile } from './entities/usuario.entity'; // No existe
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { PaginationDto, PaginationResponseDto } from '../common/dto/pagination.dto';
@@ -17,8 +17,8 @@ export class UsuariosService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    @InjectRepository(UsuarioProfile)
-    private usuarioProfileRepository: Repository<UsuarioProfile>,
+    // @InjectRepository(UsuarioProfile)
+    // private usuarioProfileRepository: Repository<UsuarioProfile>,
   ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto): Promise<User> {
@@ -46,20 +46,20 @@ export class UsuariosService {
 
     const savedUser = await this.userRepository.save(user);
 
-    // Crear perfil de usuario
-    const userProfile = this.usuarioProfileRepository.create({
-      userId: savedUser.id,
-      bio,
-      permissions: permissions || this.getDefaultPermissions(role),
-      preferences: {
-        theme: 'light',
-        language: 'es',
-        notifications: true,
-        autoSave: true,
-      },
-    });
+    // TODO: Implementar perfil de usuario cuando se cree la entidad UsuarioProfile
+    // const userProfile = this.usuarioProfileRepository.create({
+    //   userId: savedUser.id,
+    //   bio,
+    //   permissions: permissions || this.getDefaultPermissions(role),
+    //   preferences: {
+    //     theme: 'light',
+    //     language: 'es',
+    //     notifications: true,
+    //     autoSave: true,
+    //   },
+    // });
 
-    await this.usuarioProfileRepository.save(userProfile);
+    // await this.usuarioProfileRepository.save(userProfile);
 
     return savedUser;
   }
@@ -76,20 +76,14 @@ export class UsuariosService {
       relations: ['profile'], // Si tienes la relación configurada
     });
 
-    // Obtener perfiles de usuarios
-    const usersWithProfiles = await Promise.all(
-      users.map(async (user) => {
-        const profile = await this.usuarioProfileRepository.findOne({
-          where: { userId: user.id },
-        });
-
-        const { password, ...userWithoutPassword } = user;
-        return {
-          ...userWithoutPassword,
-          profile,
-        };
-      })
-    );
+    // TODO: Obtener perfiles de usuarios cuando se implemente UsuarioProfile
+    const usersWithProfiles = users.map((user) => {
+      const { password, ...userWithoutPassword } = user;
+      return {
+        ...userWithoutPassword,
+        profile: null, // TODO: Implementar cuando exista UsuarioProfile
+      };
+    });
 
     return new PaginationResponseDto(usersWithProfiles, total, page, limit);
   }
@@ -103,14 +97,15 @@ export class UsuariosService {
       throw new NotFoundException('Usuario no encontrado');
     }
 
-    const profile = await this.usuarioProfileRepository.findOne({
-      where: { userId: id },
-    });
+    // TODO: Obtener perfil cuando se implemente UsuarioProfile
+    // const profile = await this.usuarioProfileRepository.findOne({
+    //   where: { userId: id },
+    // });
 
     const { password, ...userWithoutPassword } = user;
     return {
       ...userWithoutPassword,
-      profile,
+      profile: null, // TODO: Implementar cuando exista UsuarioProfile
     };
   }
 
@@ -130,21 +125,21 @@ export class UsuariosService {
       await this.userRepository.update(id, userUpdates);
     }
 
-    // Actualizar perfil del usuario
-    if (permissions || preferences || bio !== undefined) {
-      const profile = await this.usuarioProfileRepository.findOne({
-        where: { userId: id },
-      });
+    // TODO: Actualizar perfil del usuario cuando se implemente UsuarioProfile
+    // if (permissions || preferences || bio !== undefined) {
+    //   const profile = await this.usuarioProfileRepository.findOne({
+    //     where: { userId: id },
+    //   });
 
-      if (profile) {
-        const profileUpdates: any = {};
-        if (permissions) profileUpdates.permissions = permissions;
-        if (preferences) profileUpdates.preferences = preferences;
-        if (bio !== undefined) profileUpdates.bio = bio;
+    //   if (profile) {
+    //     const profileUpdates: any = {};
+    //     if (permissions) profileUpdates.permissions = permissions;
+    //     if (preferences) profileUpdates.preferences = preferences;
+    //     if (bio !== undefined) profileUpdates.bio = bio;
 
-        await this.usuarioProfileRepository.update(profile.id, profileUpdates);
-      }
-    }
+    //     await this.usuarioProfileRepository.update(profile.id, profileUpdates);
+    //   }
+    // }
 
     return this.findOne(id);
   }
@@ -167,34 +162,38 @@ export class UsuariosService {
     totalSalesAmount?: number;
     totalClients?: number;
   }): Promise<void> {
-    const profile = await this.usuarioProfileRepository.findOne({
-      where: { userId },
-    });
+    // TODO: Implementar cuando exista UsuarioProfile
+    // const profile = await this.usuarioProfileRepository.findOne({
+    //   where: { userId },
+    // });
 
-    if (profile) {
-      await this.usuarioProfileRepository.update(profile.id, {
-        ...stats,
-        lastActivityAt: new Date(),
-      });
-    }
+    // if (profile) {
+    //   await this.usuarioProfileRepository.update(profile.id, {
+    //     ...stats,
+    //     lastActivityAt: new Date(),
+    //   });
+    // }
   }
 
   async getUserPermissions(userId: string): Promise<any> {
-    const profile = await this.usuarioProfileRepository.findOne({
-      where: { userId },
-    });
+    // TODO: Implementar cuando exista UsuarioProfile
+    // const profile = await this.usuarioProfileRepository.findOne({
+    //   where: { userId },
+    // });
 
-    return profile?.permissions || this.getDefaultPermissions('vendedor');
+    // return profile?.permissions || this.getDefaultPermissions('vendedor');
+    return this.getDefaultPermissions('vendedor');
   }
 
   async updateUserPermissions(userId: string, permissions: any): Promise<void> {
-    const profile = await this.usuarioProfileRepository.findOne({
-      where: { userId },
-    });
+    // TODO: Implementar cuando exista UsuarioProfile
+    // const profile = await this.usuarioProfileRepository.findOne({
+    //   where: { userId },
+    // });
 
-    if (profile) {
-      await this.usuarioProfileRepository.update(profile.id, { permissions });
-    }
+    // if (profile) {
+    //   await this.usuarioProfileRepository.update(profile.id, { permissions });
+    // }
   }
 
   private getDefaultPermissions(role: string): any {
@@ -238,4 +237,3 @@ export class UsuariosService {
     });
   }
 }
-

@@ -1,5 +1,8 @@
 import { Entity, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
+import { VentaDetalle } from './venta-detalle.entity';
+import { User } from '../../auth/entities/user.entity';
+import { Cliente } from '../../clientes/entities/cliente.entity';
 
 export enum EstadoVenta {
   PENDIENTE = 'pendiente',
@@ -31,11 +34,23 @@ export class Venta extends BaseEntity {
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   fechaVenta: Date;
 
-  @Column()
+  // Relaciones
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'vendedor_id' })
+  vendedor: User;
+
+  @Column({ name: 'vendedor_id' })
   vendedorId: string;
 
-  @Column({ nullable: true })
+  @ManyToOne(() => Cliente, { nullable: true })
+  @JoinColumn({ name: 'cliente_id' })
+  cliente?: Cliente;
+
+  @Column({ name: 'cliente_id', nullable: true })
   clienteId?: string;
+
+  @OneToMany(() => VentaDetalle, (detalle) => detalle.venta, { cascade: true })
+  detalles: VentaDetalle[];
 
   @Column({
     type: 'enum',
@@ -55,7 +70,7 @@ export class Venta extends BaseEntity {
   subtotal: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
-  descuento: number;
+  totalDescuentos: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   impuestos: number;
@@ -101,47 +116,31 @@ export class Venta extends BaseEntity {
 
   // Puntos y promociones
   @Column({ type: 'int', default: 0 })
-  puntosGanados: number;
+  puntosGenerados: number;
 
   @Column({ type: 'int', default: 0 })
   puntosUsados: number;
 
-  @Column({ type: 'json', nullable: true })
-  promocionesAplicadas?: {
-    id: string;
-    nombre: string;
-    descuento: number;
-    tipo: string;
-  }[];
-
-  // Información adicional
   @Column({ type: 'text', nullable: true })
   observaciones?: string;
 
-  @Column({ type: 'json', nullable: true })
-  metadatos?: {
-    ip?: string;
-    userAgent?: string;
-    dispositivo?: string;
-    ubicacion?: string;
-  };
+  // Información adicional
+  @Column({ nullable: true })
+  ticketId?: string; // Para multiticket
 
-  // Relaciones
-  @OneToMany(() => VentaDetalle, detalle => detalle.venta, { cascade: true })
-  detalles: VentaDetalle[];
+  @Column({ nullable: true })
+  referencia?: string;
 
-  // @ManyToOne(() => User, user => user.ventas)
-  // @JoinColumn({ name: 'vendedorId' })
-  // vendedor: User;
+  @Column({ type: 'timestamp', nullable: true })
+  fechaEntrega?: Date;
 
-  // @ManyToOne(() => Cliente, cliente => cliente.ventas)
-  // @JoinColumn({ name: 'clienteId' })
-  // cliente: Cliente;
+  @Column({ nullable: true })
+  repartidor?: string;
 
   // Métodos de utilidad
   calcularTotales(): void {
     this.subtotal = this.detalles?.reduce((sum, detalle) => sum + detalle.subtotal, 0) || 0;
-    this.total = this.subtotal - this.descuento + this.impuestos + this.costoDelivery;
+    this.total = this.subtotal - this.totalDescuentos + this.impuestos + this.costoDelivery;
   }
 
   get esDelivery(): boolean {
@@ -155,67 +154,6 @@ export class Venta extends BaseEntity {
   get puedeAnularse(): boolean {
     return this.estado === EstadoVenta.COMPLETADA && 
            new Date().getTime() - this.fechaVenta.getTime() < 24 * 60 * 60 * 1000; // 24 horas
-  }
-}
-
-@Entity('venta_detalles')
-export class VentaDetalle extends BaseEntity {
-  @Column()
-  ventaId: string;
-
-  @Column()
-  productoId: string;
-
-  @Column({ nullable: true })
-  comboId?: string;
-
-  @Column()
-  nombre: string; // Nombre del producto/combo al momento de la venta
-
-  @Column({ type: 'int' })
-  cantidad: number;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  precioUnitario: number;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  subtotal: number;
-
-  @Column({ type: 'decimal', precision: 5, scale: 2, default: 0 })
-  descuentoPorcentaje: number;
-
-  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
-  descuentoMonto: number;
-
-  @Column({ default: false })
-  esBonificado: boolean;
-
-  @Column({ default: true })
-  generaPuntos: boolean;
-
-  // Relaciones
-  @ManyToOne(() => Venta, venta => venta.detalles, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'ventaId' })
-  venta: Venta;
-
-  // @ManyToOne(() => Producto, producto => producto.ventaDetalles)
-  // @JoinColumn({ name: 'productoId' })
-  // producto: Producto;
-
-  // @ManyToOne(() => Combo, combo => combo.ventaDetalles)
-  // @JoinColumn({ name: 'comboId' })
-  // combo: Combo;
-
-  // Métodos de utilidad
-  calcularSubtotal(): void {
-    const subtotalBase = this.cantidad * this.precioUnitario;
-    this.subtotal = subtotalBase - this.descuentoMonto;
-  }
-
-  aplicarDescuento(porcentaje: number): void {
-    this.descuentoPorcentaje = porcentaje;
-    this.descuentoMonto = (this.cantidad * this.precioUnitario) * (porcentaje / 100);
-    this.calcularSubtotal();
   }
 }
 

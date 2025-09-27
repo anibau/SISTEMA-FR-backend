@@ -19,6 +19,10 @@ import { CierresCajaModule } from './cierres-caja/cierres-caja.module';
 import { GastosModule } from './gastos/gastos.module';
 import { CatalogoModule } from './catalogo/catalogo.module';
 import { NotificacionesModule } from './notificaciones/notificaciones.module';
+import { VentasModule } from './ventas/ventas.module';
+import { ClientesModule } from './clientes/clientes.module';
+import { CombosModule } from './combos/combos.module';
+import { AuditoriaModule } from './auditoria/auditoria.module';
 
 // Interceptors y Filters globales
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
@@ -51,14 +55,13 @@ import { AppService } from './app.service';
     GastosModule,
     CatalogoModule,
     NotificacionesModule,
-    
+    VentasModule,
+    ClientesModule,
+    CombosModule,
+    AuditoriaModule,
     // TODO: Agregar módulos restantes cuando estén listos
-    // CombosModule,
-    // VentasModule,
-    // ClientesModule,
     // WebhooksModule,
     // ConfiguracionesModule,
-    // AuditoriaModule,
   ],
   controllers: [AppController],
   providers: [
